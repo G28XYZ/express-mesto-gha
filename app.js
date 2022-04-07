@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
@@ -14,7 +13,16 @@ mongoose.connect("mongodb://localhost:27017/mestodb", {
   useNewUrlParser: true,
 });
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: "624e6cab720c760e30322d16",
+  };
+
+  next();
+});
+
 app.use("/users", require("./routes/users"));
+app.use("/cards", require("./routes/cards"));
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
