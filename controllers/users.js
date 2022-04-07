@@ -3,11 +3,10 @@ const User = require("../models/user");
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
-      if (user) {
-        return res.send(user);
-      } else {
+      if (!user) {
         return res.status(404).send({ message: "Пользователь не найден" });
       }
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === "CastError") {
