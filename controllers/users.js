@@ -2,12 +2,18 @@ const User = require("../models/user");
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send(user))
+    .then((user) => {
+      if (user) {
+        return res.send(user);
+      } else {
+        return res.status(404).send({ message: "Пользователь не найден" });
+      }
+    })
     .catch((err) => {
       if (err.name === "CastError") {
         return res
-          .status(404)
-          .send({ message: "Запрашиваемый пользователь не найден" });
+          .status(400)
+          .send({ message: "Некорректный id пользователя" });
       }
       return res.status(500).send({ message: err.message });
     });
@@ -38,7 +44,7 @@ module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about })
-    .then((user) => res.send(user))
+    .then((user) => res.send({ ...user, name, about }))
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({
@@ -53,7 +59,7 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar })
-    .then((user) => res.send(user))
+    .then((user) => res.send({ ...user, avatar }))
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({
