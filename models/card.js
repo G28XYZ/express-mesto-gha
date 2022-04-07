@@ -8,12 +8,15 @@ const cardSchema = new mongoose.Schema({
     maxlength: 30,
   },
   link: {
-    type: ObjectId,
+    type: String,
     required: true,
   },
   owner: {
-    type: ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
+  },
+  likes: {
+    type: mongoose.Schema.Types.ObjectId,
     default: [],
   },
   createdAt: {
