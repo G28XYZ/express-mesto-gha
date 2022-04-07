@@ -16,9 +16,7 @@ module.exports.getUser = (req, res) => {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => {
-      return res.status(500).send({ message: err.message });
-    });
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 module.exports.createUser = (req, res) => {
