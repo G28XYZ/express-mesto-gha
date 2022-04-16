@@ -5,7 +5,7 @@
 ## Стек
 
 <ul>
-  <li><img src='https://github.com/github/explore/blob/main/topics/nodejs/nodejs.png'/></li>
+  <li><img src='https://github.com/github/explore/blob/main/topics/nodejs/nodejs.png'/ style='width:40px;height:40px;'></li>
   <li></li>
   <li></li>
 </ul>
