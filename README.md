@@ -2,6 +2,14 @@
 
 # Проект Mesto фронтенд + бэкенд
 
+## Стек
+
+<ul>
+  <li><img src='https://github.com/github/explore/blob/main/topics/nodejs/nodejs.png'/></li>
+  <li></li>
+  <li></li>
+</ul>
+
 ## Директории
 
 `/routes` — папка с файлами роутера  
