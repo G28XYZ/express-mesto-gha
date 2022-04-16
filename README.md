@@ -4,21 +4,21 @@
 
 ## Стек
 
-<ul style="list-style-type:none;">
-  <li><img src='https://github.com/github/explore/blob/main/topics/nodejs/nodejs.png'/ style='width:40px;height:40px;'></li>
-  <li></li>
-  <li></li>
+<ul style="list-style-type:none; display: flex; flex-direction:column;">
+  <li>NodeJs <img src='https://github.com/github/explore/blob/main/topics/nodejs/nodejs.png' style='width:40px;height:40px;'/></li>
+  <li>Express <img src='https://github.com/github/explore/blob/main/topics/express/express.png' style='width:40px;height:40px;'/></li>
+  <li>Mongoose <img src='https://github.com/github/explore/blob/main/topics/mongoose/mongoose.png' style='width:40px;height:40px;'/></li>
 </ul>
 
 ## Директории
 
 `/routes` — папка с файлами роутера  
-`/controllers` — папка с файлами контроллеров пользователя и карточки   
-`/models` — папка с файлами описания схем пользователя и карточки  
-  
+`/controllers` — папка с файлами контроллеров пользователя и карточки  
+`/models` — папка с файлами описания схем пользователя и карточки
+
 Остальные директории вспомогательные, создаются при необходимости разработчиком
 
 ## Запуск проекта
 
-`npm run start` — запускает сервер   
+`npm run start` — запускает сервер  
 `npm run dev` — запускает сервер с hot-reload
