@@ -1,4 +1,4 @@
-const Card = require("../models/card");
+const Card = require('../models/card');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -12,9 +12,9 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({
-          message: "Переданы некорректные данные в метод создания карточки",
+          message: 'Переданы некорректные данные в метод создания карточки',
         });
       }
       return res.status(500).send({ message: err.message });
@@ -26,15 +26,15 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => {
       if (!card) {
         return res.status(404).send({
-          message: "Карточки не существует",
+          message: 'Карточки не существует',
         });
       }
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         return res.status(400).send({
-          message: "Некорректный id карточки",
+          message: 'Некорректный id карточки',
         });
       }
       return res.status(500).send({ message: err.message });
@@ -45,20 +45,20 @@ module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
         return res.status(404).send({
-          message: "Запрашиваемая карточка для добавления лайка не найдена",
+          message: 'Запрашиваемая карточка для добавления лайка не найдена',
         });
       }
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         return res.status(400).send({
-          message: "Некорректный id карточки",
+          message: 'Некорректный id карточки',
         });
       }
       return res.status(500).send({ message: err.message });
@@ -69,20 +69,20 @@ module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
         return res.status(404).send({
-          message: "Запрашиваемая карточка для удаления лайка не найдена",
+          message: 'Запрашиваемая карточка для удаления лайка не найдена',
         });
       }
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         return res.status(400).send({
-          message: "Некорректный id карточки",
+          message: 'Некорректный id карточки',
         });
       }
       return res.status(500).send({ message: err.message });
