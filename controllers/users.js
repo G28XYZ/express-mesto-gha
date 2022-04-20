@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+
 const User = require('../models/user');
 
 module.exports.getUser = (req, res) => {
@@ -26,8 +28,9 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
-
-  User.create({ name, about, avatar, email, password })
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({ name, about, avatar, email, password: hash }))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -81,4 +84,23 @@ module.exports.updateAvatar = (req, res) => {
       }
       return res.status(500).send({ message: err.message });
     });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+      res.send({ message: 'Всё верно!' });
+    })
+    .catch((err) => res.status(401).send({ message: err.message }));
 };
