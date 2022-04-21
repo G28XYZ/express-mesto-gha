@@ -1,5 +1,6 @@
-const bcrypt = require('bcryptjs');
-
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
 
 module.exports.getUser = (req, res) => {
@@ -89,18 +90,22 @@ module.exports.updateAvatar = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findOne({ email })
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      return bcrypt.compare(password, user.password);
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000,
+          httpOnly: true,
+        })
+        .end();
+      res.send({ token });
     })
-    .then((matched) => {
-      if (!matched) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      res.send({ message: 'Всё верно!' });
-    })
-    .catch((err) => res.status(401).send({ message: err.message }));
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
 };
