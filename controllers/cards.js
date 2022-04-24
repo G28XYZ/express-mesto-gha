@@ -1,5 +1,6 @@
 const Card = require('../models/card');
-const errors = require('../utils/errors');
+const NotFoundError = require('../utils/errors/NotFoundError');
+const catchError = require('../utils/catchError');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -12,33 +13,19 @@ module.exports.createCard = (req, res) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
-    .catch((err) => {
-      const { statusCode = 500, message } = errors(err);
-      return res.status(statusCode).send({ message });
-    });
+    .catch((err) => catchError(err, res));
 };
 
 module.exports.deleteCard = (req, res) => {
   const removeCard = () => {
     Card.findByIdAndRemove(req.params.cardId)
       .then((card) => res.send(card))
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          return res.status(400).send({
-            message: 'Некорректный id карточки',
-          });
-        }
-        return res.status(500).send({ message: err.message });
-      });
+      .catch((err) => catchError(err, res));
   };
 
   Card.findById(req.params.cardId)
     .then((card) => {
-      if (!card) {
-        return res.status(404).send({
-          message: 'Карточки не существует',
-        });
-      }
+      if (!card) throw new NotFoundError('Карточки не существует');
       if (req.user._id === card.owner.toString()) {
         return removeCard();
       }
@@ -57,20 +44,13 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
-          message: 'Запрашиваемая карточка для добавления лайка не найдена',
-        });
+        throw new NotFoundError(
+          'Запрашиваемая карточка для добавления лайка не найдена',
+        );
       }
       return res.send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({
-          message: 'Некорректный id карточки',
-        });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch((err) => catchError(err, res));
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -81,18 +61,11 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
-          message: 'Запрашиваемая карточка для удаления лайка не найдена',
-        });
+        throw new NotFoundError(
+          'Запрашиваемая карточка для удаления лайка не найдена',
+        );
       }
       return res.send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({
-          message: 'Некорректный id карточки',
-        });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch((err) => catchError(err, res));
 };

@@ -16,7 +16,7 @@ module.exports.getUser = (req, res) => {
       }
       return res.send(user);
     })
-    .catch((err) => catchError(res, err));
+    .catch((err) => catchError(err, res));
 };
 
 module.exports.getMe = (req, res) => {
@@ -42,7 +42,7 @@ module.exports.createUser = (req, res) => {
     .hash(password, 10)
     .then((hash) => createUser(hash))
     .then((user) => res.send(user))
-    .catch((err) => catchError(res, err));
+    .catch((err) => catchError(err, res));
 };
 
 module.exports.updateProfile = (req, res) => {
@@ -57,7 +57,7 @@ module.exports.updateProfile = (req, res) => {
         about,
       }),
     )
-    .catch((err) => catchError(res, err));
+    .catch((err) => catchError(err, res));
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -72,12 +72,12 @@ module.exports.updateAvatar = (req, res) => {
         about: user.about,
       }),
     )
-    .catch((err) => catchError(res, err));
+    .catch((err) => catchError(err, res));
 };
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: '7d',
@@ -89,5 +89,5 @@ module.exports.login = (req, res) => {
       });
       res.send({ token });
     })
-    .catch((err) => catchError(res, err));
+    .catch((err) => catchError(err, res));
 };

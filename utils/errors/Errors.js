@@ -6,7 +6,7 @@ const UnauthorizedError = require('./UnauthorizedError');
 
 const errors = (err) => {
   const errorClasses = {
-    CastError: new CastError('Некорректный id пользователя'),
+    CastError: new CastError('Некорректный id'),
     NotFoundError: new NotFoundError(err.message || 'Пользователь не найден'),
     ValidationError: new ValidationError(err.message),
     MongoServerError: new ConflictError(
