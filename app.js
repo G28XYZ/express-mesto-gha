@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 require('dotenv').config();
-const { PORT } = process.env;
+
+const { PORT = 3000 } = process.env;
 
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
