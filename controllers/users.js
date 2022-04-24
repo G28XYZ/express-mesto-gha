@@ -1,26 +1,22 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
+const catchError = require('../utils/catchError');
+
 const { JWT_SECRET } = process.env;
 
 const User = require('../models/user');
+const NotFoundError = require('../utils/errors/NotFoundError');
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'Пользователь не найден' });
+        throw new NotFoundError('Пользователь не найден');
       }
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res
-          .status(400)
-          .send({ message: 'Некорректный id пользователя' });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch((err) => catchError(res, err));
 };
 
 module.exports.getMe = (req, res) => {
@@ -46,20 +42,7 @@ module.exports.createUser = (req, res) => {
     .hash(password, 10)
     .then((hash) => createUser(hash))
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.code === 11000) {
-        return res.status(409).send({
-          message:
-            'Пользователь c веденным email уже существует, попробуйте другой',
-        });
-      }
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({
-          message: `Переданы некорректные данные в метод создания пользователя - ${err.message}`,
-        });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch((err) => catchError(res, err));
 };
 
 module.exports.updateProfile = (req, res) => {
@@ -68,20 +51,13 @@ module.exports.updateProfile = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
     .then((user) =>
       res.send({
-        _id: user._id,
+        _id: [user._id],
         avatar: user.avatar,
         name,
         about,
       }),
     )
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({
-          message: 'Переданы некорректные данные в метод обновления профиля',
-        });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch((err) => catchError(res, err));
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -96,14 +72,7 @@ module.exports.updateAvatar = (req, res) => {
         about: user.about,
       }),
     )
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({
-          message: 'Переданы некорректные данные в метод обновления аватар',
-        });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch((err) => catchError(res, err));
 };
 
 module.exports.login = (req, res) => {
@@ -120,7 +89,5 @@ module.exports.login = (req, res) => {
       });
       res.send({ token });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch((err) => catchError(res, err));
 };
