@@ -47,9 +47,15 @@ module.exports.createUser = (req, res) => {
     .then((hash) => createUser(hash))
     .then((user) => res.send(user))
     .catch((err) => {
+      if (err.code === 11000) {
+        return res.status(409).send({
+          message:
+            'Пользователь c веденным email уже существует, попробуйте другой',
+        });
+      }
       if (err.name === 'ValidationError') {
         return res.status(400).send({
-          message: 'Переданы некорректные данные в метод создания пользователя',
+          message: `Переданы некорректные данные в метод создания пользователя - ${err.message}`,
         });
       }
       return res.status(500).send({ message: err.message });
