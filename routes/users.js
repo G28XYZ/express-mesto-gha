@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { reg } = require('../utils/isLink');
 
 const {
   getUsers,
@@ -34,7 +35,7 @@ router.patch(
   '/me/avatar',
   celebrate({
     body: Joi.object().keys({
-      avatar: Joi.string().required().uri(),
+      avatar: Joi.string().pattern(reg).required(),
     }),
   }),
   updateAvatar,

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-
+const { reg } = require('../utils/isLink');
 const { createUser, login } = require('../controllers/users');
 
 router.post(
@@ -9,7 +9,7 @@ router.post(
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().uri(),
+      avatar: Joi.string().pattern(reg),
       email: Joi.string().required().email(),
       password: Joi.string().required().min(8),
     }),
