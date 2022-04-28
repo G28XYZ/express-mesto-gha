@@ -37,6 +37,7 @@ router.put(
   }),
   likeCard,
 );
+
 router.delete(
   '/:cardId/likes',
   celebrate({

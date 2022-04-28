@@ -43,7 +43,7 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        next(
+        return next(
           new NotFoundError(
             'Запрашиваемая карточка для добавления лайка не найдена',
           ),
@@ -62,7 +62,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        next(
+        return next(
           new NotFoundError(
             'Запрашиваемая карточка для удаления лайка не найдена',
           ),
