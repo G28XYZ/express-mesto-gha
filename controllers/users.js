@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
-const catchError = require('../utils/catchError');
 
 const { JWT_SECRET } = process.env;
 
@@ -33,16 +32,17 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
-  const createUser = (hash) =>
-    User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    });
+  const createUser = (hash) => User.create({
+    name,
+    about,
+    avatar,
+    email,
+    password: hash,
+  });
 
   bcrypt
     .hash(password, 10)
@@ -65,14 +65,12 @@ module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
-    .then((user) =>
-      res.send({
-        _id: [user._id],
-        avatar: user.avatar,
-        name,
-        about,
-      }),
-    )
+    .then((user) => res.send({
+      _id: [user._id],
+      avatar: user.avatar,
+      name,
+      about,
+    }))
     .catch(next);
 };
 
@@ -80,14 +78,12 @@ module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
-    .then((user) =>
-      res.send({
-        _id: user._id,
-        avatar,
-        name: user.name,
-        about: user.about,
-      }),
-    )
+    .then((user) => res.send({
+      _id: user._id,
+      avatar,
+      name: user.name,
+      about: user.about,
+    }))
     .catch(next);
 };
 
