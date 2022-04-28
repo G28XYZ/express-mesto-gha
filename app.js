@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-// const { errors } = require('celebrate');
+const { errors } = require('celebrate');
 const Errors = require('./utils/errors/Errors');
 
 require('dotenv').config();
@@ -34,7 +34,7 @@ app.all('*', (req, res) => {
   res.status(404).send({ message: 'Неправильный путь' });
 });
 
-// app.use(errors());
+app.use(errors());
 
 app.use(Errors);
 
