@@ -55,7 +55,6 @@ module.exports.createUser = (req, res, next) => {
         about,
         avatar,
         email,
-        password,
       });
     })
     .catch(next);
