@@ -8,7 +8,6 @@ require('dotenv').config();
 
 const { PORT = 3000 } = process.env;
 
-const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
 const app = express();
@@ -23,10 +22,9 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   autoIndex: true,
 });
 
-app.use(errors());
+app.use('/', require('./routes/auth'));
 
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.use(errors());
 
 app.use(auth);
 
