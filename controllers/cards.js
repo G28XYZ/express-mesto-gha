@@ -2,30 +2,30 @@ const Card = require('../models/card');
 const NotFoundError = require('../utils/errors/NotFoundError');
 const catchError = require('../utils/catchError');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
-    .catch((err) => catchError(err, res));
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const removeCard = () => {
     Card.findByIdAndRemove(req.params.cardId)
       .then((card) => res.send(card))
-      .catch((err) => catchError(err, res));
+      .catch(next);
   };
 
   Card.findById(req.params.cardId)
     .then((card) => {
-      if (!card) throw new NotFoundError('Карточки не существует');
+      if (!card) next(new NotFoundError('Карточки не существует'));
       if (req.user._id === card.owner.toString()) {
         return removeCard();
       }
@@ -33,10 +33,10 @@ module.exports.deleteCard = (req, res) => {
         .status(403)
         .send({ message: 'Попытка удалить чужую карточку' });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -44,16 +44,18 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(
-          'Запрашиваемая карточка для добавления лайка не найдена',
+        next(
+          new NotFoundError(
+            'Запрашиваемая карточка для добавления лайка не найдена',
+          ),
         );
       }
       return res.send(card);
     })
-    .catch((err) => catchError(err, res));
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -61,11 +63,13 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(
-          'Запрашиваемая карточка для удаления лайка не найдена',
+        next(
+          new NotFoundError(
+            'Запрашиваемая карточка для удаления лайка не найдена',
+          ),
         );
       }
       return res.send(card);
     })
-    .catch((err) => catchError(err, res));
+    .catch(next);
 };

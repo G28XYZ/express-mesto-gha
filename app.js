@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
+const Errors = require('./utils/errors/Errors');
 
 require('dotenv').config();
 
@@ -24,8 +25,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use('/', require('./routes/auth'));
 
-app.use(errors());
-
 app.use(auth);
 
 app.use('/users', require('./routes/users'));
@@ -34,6 +33,10 @@ app.use('/cards', require('./routes/cards'));
 app.all('*', (req, res) => {
   res.status(404).send({ message: 'Неправильный путь' });
 });
+
+// app.use(errors());
+
+app.use(Errors);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

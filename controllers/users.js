@@ -8,77 +8,90 @@ const { JWT_SECRET } = process.env;
 const User = require('../models/user');
 const NotFoundError = require('../utils/errors/NotFoundError');
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        next(new NotFoundError('Пользователь не найден'));
       }
       return res.send(user);
     })
-    .catch((err) => catchError(err, res));
+    .catch(next);
 };
 
-module.exports.getMe = (req, res) => {
+module.exports.getMe = (req, res, next) => {
   const { _id } = req.user;
   User.find({ _id })
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+module.exports.createUser = (req, res, next) => {
+  const { name, about, avatar, email, password } = req.body;
 
-  const createUser = (hash) => User.create({
-    name,
-    about,
-    avatar,
-    email,
-    password: hash,
-  });
+  const createUser = (hash) =>
+    User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    });
 
   bcrypt
     .hash(password, 10)
     .then((hash) => createUser(hash))
-    .then((user) => res.send({ ...user, password }))
-    .catch((err) => catchError(err, res));
+    .then((user) => {
+      const { _id } = user;
+      res.send({
+        _id,
+        name,
+        about,
+        avatar,
+        email,
+        password,
+      });
+    })
+    .catch(next);
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
-    .then((user) => res.send({
-      _id: [user._id],
-      avatar: user.avatar,
-      name,
-      about,
-    }))
-    .catch((err) => catchError(err, res));
+    .then((user) =>
+      res.send({
+        _id: [user._id],
+        avatar: user.avatar,
+        name,
+        about,
+      }),
+    )
+    .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
-    .then((user) => res.send({
-      _id: user._id,
-      avatar,
-      name: user.name,
-      about: user.about,
-    }))
-    .catch((err) => catchError(err, res));
+    .then((user) =>
+      res.send({
+        _id: user._id,
+        avatar,
+        name: user.name,
+        about: user.about,
+      }),
+    )
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
@@ -92,5 +105,5 @@ module.exports.login = (req, res) => {
       });
       res.send({ token });
     })
-    .catch((err) => catchError(err, res));
+    .catch(next);
 };
