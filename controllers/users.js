@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const NotFoundError = require('../errors/NotFoundError');
 require('dotenv').config();
 
 const { JWT_SECRET } = process.env;
 
 const User = require('../models/user');
-const NotFoundError = require('../utils/errors/NotFoundError');
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
