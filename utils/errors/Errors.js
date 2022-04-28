@@ -4,14 +4,6 @@ const ValidationError = require('./ValidationError');
 const ConflictError = require('./ConflictError');
 const UnauthorizedError = require('./UnauthorizedError');
 
-const isCelebrate = (err) => {
-  try {
-    return !!err.details.get('body');
-  } catch (e) {
-    return false;
-  }
-};
-
 const Errors = (err, req, res, next) => {
   let statusCode = 500;
   let message = 'На сервере произошла ошибка';
@@ -26,13 +18,9 @@ const Errors = (err, req, res, next) => {
     UnauthorizedError: new UnauthorizedError(err.message),
   };
 
-  let error = errorClasses[errorName];
+  const error = errorClasses[errorName];
 
-  if (isCelebrate(err)) {
-    error = errorClasses[err.details.get('body').name];
-    statusCode = error.statusCode;
-    message = error.message;
-  } else if (error) {
+  if (error) {
     statusCode = error.statusCode;
     message = error.message;
   }

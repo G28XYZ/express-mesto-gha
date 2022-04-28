@@ -21,7 +21,12 @@ module.exports.getUser = (req, res, next) => {
 module.exports.getMe = (req, res, next) => {
   const { _id } = req.user;
   User.find({ _id })
-    .then((user) => res.send(user))
+    .then((user) => {
+      if (!user) {
+        next(new NotFoundError('Пользователь не найден'));
+      }
+      return res.send(user);
+    })
     .catch(next);
 };
 
