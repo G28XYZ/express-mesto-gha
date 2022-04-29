@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
-const Errors = require('./errors');
+
+const errorHandler = require('./errors/errorHandler');
 
 require('dotenv').config();
 
@@ -36,7 +37,7 @@ app.all('*', (req, res) => {
 
 app.use(errors());
 
-app.use(Errors);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
