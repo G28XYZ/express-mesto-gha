@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const NotFoundError = require('../errors/NotFoundError');
 require('dotenv').config();
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET = 'JWT_SECRET' } = process.env;
 
 const User = require('../models/user');
 

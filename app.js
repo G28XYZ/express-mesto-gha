@@ -11,6 +11,7 @@ require('dotenv').config();
 const { PORT = 3000 } = process.env;
 
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/NotFoundError');
 
 const app = express();
 
@@ -31,8 +32,8 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.all('*', (req, res) => {
-  res.status(404).send({ message: 'Неправильный путь' });
+app.all('*', (req, res, next) => {
+  next(new NotFoundError('Неправильный путь'));
 });
 
 app.use(errors());

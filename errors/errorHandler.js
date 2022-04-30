@@ -1,7 +1,12 @@
+const ConflictError = require('./ConflictError');
+
 const errorHandler = (err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message =
-    statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
+  let error = err;
+  if (error.code === 11000) {
+    error = new ConflictError('Пользователь уже существует');
+  }
+  const statusCode = error.statusCode || 500;
+  const message = statusCode === 500 ? 'На сервере произошла ошибка' : error.message;
   res.status(statusCode).send({ message });
   next();
 };
