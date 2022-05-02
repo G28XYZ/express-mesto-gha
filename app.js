@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
-
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require('./errors/errorHandler');
 
 require('dotenv').config();
@@ -25,6 +25,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   autoIndex: true,
 });
 
+app.use(requestLogger);
+
 app.use('/', require('./routes/auth'));
 
 app.use(auth);
@@ -36,6 +38,7 @@ app.all('*', (req, res, next) => {
   next(new NotFoundError('Неправильный путь'));
 });
 
+app.use(errorLogger);
 app.use(errors());
 
 app.use(errorHandler);
