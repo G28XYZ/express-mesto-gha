@@ -8,6 +8,12 @@ const errorHandler = require('./errors/errorHandler');
 
 require('dotenv').config();
 
+const allowedCors = [
+  'https://praktikum.tk',
+  'http://praktikum.tk',
+  'localhost:3000',
+];
+
 const { PORT = 3000 } = process.env;
 
 const auth = require('./middlewares/auth');
@@ -19,7 +25,25 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// mongoose.connect('mongodb://localhost:27017/mestodb', {
+// CORS
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+  const { method } = req;
+  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+  const requestHeaders = req.headers['access-control-request-headers'];
+
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
+  if (method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+    res.header('Access-Control-Allow-Headers', requestHeaders);
+    return res.end();
+  }
+  next();
+});
+
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useUnifiedTopology: true,
   useNewUrlParser: true,
