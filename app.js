@@ -9,7 +9,7 @@ const errorHandler = require('./errors/errorHandler');
 
 require('dotenv').config();
 
-const { PORT = 3001 } = process.env;
+const { PORT = 3000 } = process.env;
 
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
