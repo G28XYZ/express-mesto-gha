@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -8,7 +9,7 @@ const errorHandler = require('./errors/errorHandler');
 
 require('dotenv').config();
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
@@ -19,12 +20,20 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(
+  cors({
+    credentials: true,
+    origin: [
+      'http://localhost:3000',
+      'https://mesto.online.nomoredomains.work',
+    ],
+  }),
+);
 // CORS
 app.use((req, res, next) => {
   const { method } = req;
   const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
   const requestHeaders = req.headers['access-control-request-headers'];
-  res.header('Access-Control-Allow-Origin', '*');
 
   if (method === 'OPTIONS') {
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);

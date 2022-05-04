@@ -27,7 +27,7 @@ module.exports.getMe = (req, res, next) => {
       if (!user) {
         next(new NotFoundError('Пользователь не найден'));
       }
-      return res.send(user);
+      return res.send(...user);
     })
     .catch(next);
 };
