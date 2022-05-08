@@ -26,7 +26,6 @@ module.exports = (req, res, next) => {
   if (!payload) {
     handleAuthError(next);
   }
-  console.log(payload);
   req.user = payload;
   return next();
 };
